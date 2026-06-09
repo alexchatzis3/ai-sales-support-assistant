@@ -1,0 +1,362 @@
+ΚΑΤΑΛΟΓΟΣ ΠΡΟΪΟΝΤΩΝ
+
+========================================
+LAPTOPS
+========================================
+
+Προϊόν: GamePro 15
+Κατηγορία: Laptop
+Τιμή: 899€
+Χρήση: Gaming
+CPU: AMD Ryzen 7 8845HS
+RAM: 16GB
+Storage: 1TB SSD
+GPU: NVIDIA RTX 4050
+Μπαταρία: Μέτρια
+Διαθεσιμότητα: Διαθέσιμο
+
+Προϊόν: NitroPlay 15
+Κατηγορία: Laptop
+Τιμή: 1099€
+Χρήση: Gaming
+CPU: Ryzen 7
+RAM: 16GB
+Storage: 1TB SSD
+GPU: RTX 4060
+Μπαταρία: Μέτρια
+Διαθεσιμότητα: Διαθέσιμο
+
+Προϊόν: Titan Gaming G17
+Κατηγορία: Laptop
+Τιμή: 1699€
+Χρήση: Competitive Gaming, Streaming
+CPU: Intel Core i9
+RAM: 32GB
+Storage: 2TB SSD
+GPU: NVIDIA RTX 4080
+Μπαταρία: Μέτρια
+Διαθεσιμότητα: Διαθέσιμο
+
+Προϊόν: Business Elite 14
+Κατηγορία: Laptop
+Τιμή: 999€
+Χρήση: Business, Travel
+CPU: Intel Core Ultra 7
+RAM: 16GB
+Storage: 512GB SSD
+GPU: Integrated
+Μπαταρία: Εξαιρετική
+Διαθεσιμότητα: Διαθέσιμο
+
+Προϊόν: Executive Pro 16
+Κατηγορία: Laptop
+Τιμή: 1299€
+Χρήση: Business, Productivity
+CPU: Intel Core Ultra 9
+RAM: 32GB
+Storage: 1TB SSD
+GPU: Integrated
+Μπαταρία: Πολύ καλή
+Διαθεσιμότητα: Διαθέσιμο
+
+Προϊόν: TechBook Air 14
+Κατηγορία: Laptop
+Τιμή: 699€
+Χρήση: Σπουδές, εργασία γραφείου, φορητότητα
+CPU: Intel Core i5-13420H
+RAM: 16GB
+Storage: 512GB SSD
+GPU: Integrated Intel Graphics
+Μπαταρία: Πολύ καλή
+Διαθεσιμότητα: Διαθέσιμο
+
+Προϊόν: StudentBook 15
+Κατηγορία: Laptop
+Τιμή: 599€
+Χρήση: Σπουδές, browsing, Office
+CPU: AMD Ryzen 5 7530U
+RAM: 8GB
+Storage: 512GB SSD
+GPU: Integrated Radeon Graphics
+Μπαταρία: Καλή
+Διαθεσιμότητα: Διαθέσιμο
+
+Προϊόν: UltraGaming X16
+Κατηγορία: Laptop
+Τιμή: 1399€
+Χρήση: Gaming, Streaming
+CPU: Intel Core i7-14650HX
+RAM: 32GB
+Storage: 1TB SSD
+GPU: NVIDIA RTX 4070
+Μπαταρία: Μέτρια
+Διαθεσιμότητα: Διαθέσιμο
+
+Προϊόν: CreatorPad 16
+Κατηγορία: Laptop
+Τιμή: 1199€
+Χρήση: Video Editing, Design
+CPU: Intel Core i7
+RAM: 32GB
+Storage: 1TB SSD
+GPU: NVIDIA RTX 4060
+Μπαταρία: Καλή
+Διαθεσιμότητα: Περιορισμένη διαθεσιμότητα
+
+========================================
+MONITORS
+========================================
+
+Προϊόν: StudioColor 27
+Κατηγορία: Monitor
+Τιμή: 599€
+Μέγεθος: 27"
+Ανάλυση: 4K
+Refresh Rate: 60Hz
+Χρήση: Photography, Design, Video Editing, Photo Editing, Color Work
+Διαθεσιμότητα: Διαθέσιμο
+
+Προϊόν: GamerView 32
+Κατηγορία: Monitor
+Τιμή: 399€
+Μέγεθος: 32"
+Ανάλυση: 1440p
+Refresh Rate: 165Hz
+Χρήση: Gaming
+Διαθεσιμότητα: Διαθέσιμο
+
+Προϊόν: UltraView 27
+Κατηγορία: Monitor
+Τιμή: 249€
+Μέγεθος: 27"
+Ανάλυση: 2560x1440
+Refresh Rate: 144Hz
+Χρήση: Gaming, Work
+Διαθεσιμότητα: Διαθέσιμο
+
+Προϊόν: OfficeView 24
+Κατηγορία: Monitor
+Τιμή: 149€
+Μέγεθος: 24"
+Ανάλυση: Full HD
+Refresh Rate: 75Hz
+Χρήση: Office
+Διαθεσιμότητα: Διαθέσιμο
+
+Προϊόν: ProColor 32
+Κατηγορία: Monitor
+Τιμή: 499€
+Μέγεθος: 32"
+Ανάλυση: 4K
+Refresh Rate: 60Hz
+Χρήση: Design, Editing, Video Editing, Photo Editing, Content Creation
+Διαθεσιμότητα: Διαθέσιμο
+
+
+========================================
+DESKTOP PCs
+========================================
+
+Προϊόν: OfficeDesk Mini
+Κατηγορία: Desktop
+Τιμή: 549€
+Χρήση: Office, Browsing
+CPU: Intel Core i3
+RAM: 8GB
+Storage: 512GB SSD
+GPU: Integrated
+Διαθεσιμότητα: Διαθέσιμο
+
+Προϊόν: OfficeDesk Pro
+Κατηγορία: Desktop
+Τιμή: 799€
+Χρήση: Office, Business
+CPU: Intel Core i5
+RAM: 16GB
+Storage: 1TB SSD
+GPU: Integrated
+Διαθεσιμότητα: Διαθέσιμο
+
+Προϊόν: Gaming Beast
+Κατηγορία: Desktop
+Τιμή: 1499€
+Χρήση: Gaming
+CPU: AMD Ryzen 7
+RAM: 32GB
+Storage: 1TB SSD
+GPU: RTX 4070
+Διαθεσιμότητα: Διαθέσιμο
+
+========================================
+SMARTPHONES
+========================================
+
+Προϊόν: SmartOne SE
+Κατηγορία: Smartphone
+Τιμή: 199€
+Οθόνη: 6.1"
+Storage: 64GB
+Κάμερα: 32MP
+Μπαταρία: 4500mAh
+Διαθεσιμότητα: Διαθέσιμο
+
+Προϊόν: SmartOne Ultra
+Κατηγορία: Smartphone
+Τιμή: 1499€
+Οθόνη: 6.9"
+Storage: 1TB
+Κάμερα: 200MP
+Μπαταρία: 6000mAh
+Διαθεσιμότητα: Διαθέσιμο
+
+Προϊόν: SmartOne 14
+Κατηγορία: Smartphone
+Τιμή: 699€
+Οθόνη: 6.5"
+Storage: 256GB
+Κάμερα: 50MP
+Μπαταρία: 5000mAh
+Διαθεσιμότητα: Διαθέσιμο
+
+Προϊόν: SmartOne Lite
+Κατηγορία: Smartphone
+Τιμή: 299€
+Οθόνη: 6.4"
+Storage: 128GB
+Κάμερα: 48MP
+Μπαταρία: 5000mAh
+Διαθεσιμότητα: Διαθέσιμο
+
+Προϊόν: SmartOne Pro Max
+Κατηγορία: Smartphone
+Τιμή: 1199€
+Οθόνη: 6.8"
+Storage: 512GB
+Κάμερα: 200MP
+Μπαταρία: 5500mAh
+Διαθεσιμότητα: Διαθέσιμο
+
+========================================
+TABLETS
+========================================
+
+Προϊόν: TabGo 11
+Κατηγορία: Tablet
+Τιμή: 349€
+Οθόνη: 11"
+Storage: 128GB
+Χρήση: Media, Σπουδές
+Διαθεσιμότητα: Διαθέσιμο
+
+Προϊόν: TabPro 13
+Κατηγορία: Tablet
+Τιμή: 899€
+Οθόνη: 13"
+Storage: 256GB
+Χρήση: Professional Work
+Διαθεσιμότητα: Διαθέσιμο
+
+========================================
+ACCESSORIES
+========================================
+
+Προϊόν: StreamCam Pro
+Κατηγορία: Webcam
+Τιμή: 89€
+Χρήση: Streaming, Video Calls
+Διαθεσιμότητα: Διαθέσιμο
+
+Προϊόν: Gaming Chair X
+Κατηγορία: Gaming Chair
+Τιμή: 249€
+Χρήση: Gaming
+Διαθεσιμότητα: Διαθέσιμο
+
+Προϊόν: Portable SSD 1TB
+Κατηγορία: Storage
+Τιμή: 119€
+Χρήση: Backup, Storage
+Διαθεσιμότητα: Διαθέσιμο
+
+Προϊόν: Gamer Mouse X
+Κατηγορία: Mouse
+Τιμή: 49€
+Χρήση: Gaming
+Διαθεσιμότητα: Διαθέσιμο
+
+Προϊόν: Mechanical Keyboard Pro
+Κατηγορία: Keyboard
+Τιμή: 89€
+Χρήση: Gaming, Office
+Διαθεσιμότητα: Διαθέσιμο
+
+Προϊόν: Wireless Headset 7.1
+Κατηγορία: Headset
+Τιμή: 129€
+Χρήση: Gaming, Calls
+Διαθεσιμότητα: Διαθέσιμο
+
+Προϊόν: USB-C Dock Station
+Κατηγορία: Accessory
+Τιμή: 99€
+Χρήση: Productivity
+Διαθεσιμότητα: Διαθέσιμο
+
+========================================
+SMART HOME
+========================================
+
+Προϊόν: Smart Bulb RGB
+Κατηγορία: Smart Home
+Τιμή: 24€
+Χρήση: Smart Lighting
+WiFi: Ναι
+Διαθεσιμότητα: Διαθέσιμο
+
+Προϊόν: Smart Plug Mini
+Κατηγορία: Smart Home
+Τιμή: 19€
+Χρήση: Home Automation
+WiFi: Ναι
+Διαθεσιμότητα: Διαθέσιμο
+
+Προϊόν: HomeCam 360
+Κατηγορία: Smart Home
+Τιμή: 79€
+Χρήση: Security
+Ανάλυση: 2K
+Διαθεσιμότητα: Διαθέσιμο
+
+========================================
+STREAMING
+========================================
+
+Προϊόν: StreamMic Pro
+Κατηγορία: Microphone
+Τιμή: 129€
+Χρήση: Streaming, Podcast
+Διαθεσιμότητα: Διαθέσιμο
+
+Προϊόν: Stream Light Kit
+Κατηγορία: Streaming Equipment
+Τιμή: 89€
+Χρήση: Streaming, Content Creation
+Διαθεσιμότητα: Διαθέσιμο
+
+========================================
+PRINTERS
+========================================
+
+Προϊόν: OfficePrint 250
+Κατηγορία: Printer
+Τιμή: 149€
+Χρήση: Office
+Τύπος: Inkjet
+Διαθεσιμότητα: Διαθέσιμο
+
+Προϊόν: LaserPrint Pro
+Κατηγορία: Printer
+Τιμή: 299€
+Χρήση: Business
+Τύπος: Laser
+Διαθεσιμότητα: Διαθέσιμο
