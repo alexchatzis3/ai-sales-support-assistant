@@ -1,3 +1,17 @@
+"""
+The `rag_service.py` file is the core service responsible for executing the Retrieval Augmented Generation (RAG) workflow.
+
+First, it builds conversation context from chat history using the memory service. This allows the assistant to handle follow-up questions and maintain context across multiple interactions.
+
+Next, it determines the appropriate knowledge base route, either from the LangGraph router or through fallback keyword-based routing.
+
+Based on the selected route, it retrieves th e corresponding retriever from the vector store service and performs a similarity search in Chroma to obtain the most relevant document chunks.
+
+The retrieved context, together with the user's question and conversation history, is then passed to the RAG prompt.
+
+Finally, GPT-4o-mini generates a grounded response using the retrieved information, and the service returns the answer, selected route, and source references.
+"""
+
 from langchain_openai import ChatOpenAI
 
 from backend.app.core.settings import CHAT_MODEL
@@ -131,15 +145,19 @@ Current question:
     else:       
         route = route_question(question)
 
+        # For follow-up questions 
         if route == "faqs":
             previous_route = get_last_route_from_history(history)
 
             if previous_route:
                 route = previous_route
 
+    # Current question is only used for `products`
+    # Conversation context might harm the retrieval process
     if route == "products":
         retrieval_query = question
     else:
+        # We keep the context for FAQs/policies
         retrieval_query = retrieval_question
 
 
