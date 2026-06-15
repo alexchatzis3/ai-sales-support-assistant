@@ -35,7 +35,7 @@ class ChatRequest(BaseModel):
         examples=["Θέλω laptop για gaming μέχρι 900€"],
     )
 
-    history: list[ChatMessage] = [],
+    history: list[ChatMessage] = Field(default_factory=list),
 
 
 
