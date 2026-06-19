@@ -10,8 +10,9 @@ The assistant helps customers:
 * Ask questions about store policies
 * Learn about shipping and payment methods
 * Receive customer support information
-* Compare products
 * Continue multi-turn conversations using memory
+* Compare products side-by-side
+* Display retrieved sources for answer transparency
 
 The project combines Retrieval-Augmented Generation (RAG), conversation memory and workflow orchestration through LangGraph.
 
@@ -48,6 +49,7 @@ The main objectives of the project are:
 * OpenAI GPT-4o-mini
 * OpenAI Embeddings (text-embedding-3-small)
 * Chroma Vector Store
+* BM25 Retrieval
 
 ---
 
@@ -99,7 +101,7 @@ The following diagram illustrates the overall architecture of the AI Sales & Sup
     - FAQs
 4. The RAG Service orchestrates retrieval and answer generation.
 5. Memory Service provides conversation context and summaries.
-6. Vectorstore Service retrieves relevant information from Chroma.
+6. Vectorstore Service performs hybrid retrieval using Chroma vector search and BM25 keyword retrieval.
 7. OpenAI GPT-4o-mini generates the final response.
 8. The answer is returned to the user interface.
 
@@ -137,8 +139,11 @@ The Retrieval-Augmented Generation pipeline performs the following steps:
 2. Split documents into chunks
 3. Generate embeddings
 4. Store vectors in Chroma
-5. Retrieve relevant chunks
-6. Generate grounded responses using gpt-4o-mini
+5. Perform hybrid retrieval:
+   - Chroma vector similarity search
+   - BM25 keyword retrieval
+6. Combine retrieval results using an Ensemble Retriever
+7. Generate grounded responses using GPT-4o-mini
 
 ---
 
@@ -184,6 +189,15 @@ The assistant retrieves relevant business knowledge before generating a response
 
 OpenAI embeddings are used to transform text into vector representations.
 
+### Hybrid Retrieval
+
+The system combines two retrieval strategies:
+
+- Chroma vector similarity search for semantic retrieval
+- BM25 keyword retrieval for exact term matching
+
+The results are combined using an ensemble retriever, improving retrieval robustness.
+
 ### Vector Search
 
 Chroma performs similarity search to find relevant information.
@@ -195,6 +209,22 @@ Recent messages are preserved while older messages are summarized.
 ### LangGraph Routing
 
 Questions are routed to specialized knowledge bases before retrieval.
+
+### Source Transparency
+
+The assistant exposes retrieved source previews and the selected retrieval route. This improves explainability and allows users to understand how answers were generated.
+
+### Product Comparison
+
+The assistant can compare multiple products using retrieved catalog information and present differences in a structured format.
+
+User:
+
+"Compare GamePro 15 and NitroPlay 15"
+
+Assistant:
+
+Retrieves product specifications and presents a structured comparison using only available catalog information.
 
 ---
 
@@ -263,7 +293,9 @@ Potential future enhancements include:
 - User authentication
 - Order tracking tools
 - Multi-language support
-- Advanced recommendation algorithms
+- LLM-based reranking
+- Multi-agent architecture
+- Integration with real-time inventory systems
 
 ---
 

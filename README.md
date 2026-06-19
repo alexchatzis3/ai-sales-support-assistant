@@ -11,11 +11,17 @@ The application helps users ask questions about products, store policies, shippi
 - LangChain RAG pipeline
 - OpenAI LLM integration
 - Chroma vector store
+- BM25 keyword retrieval
+- Hybrid retrieval using Chroma and BM25
 - Product recommendation support
+- Product comparison support
 - FAQ, policies and product catalog retrieval
 - Conversation memory
 - Summary of older chat history
 - LangGraph-based routing
+- Retrieved source previews
+- Source citations in generated answers
+- Out-of-scope question handling
 
 ## Architecture
 
@@ -125,12 +131,40 @@ http://127.0.0.1:7860
 
 ## Example Questions
 
+### Product Recommendation
+
 ```text
 Θέλω laptop για gaming μέχρι 900€
-Τι μου πρότεινες τελικά;
-Ποια είναι η πολιτική επιστροφών;
-Υποστηρίζετε Box Now;
+Θέλω laptop για gaming μέχρι 1900€
 Έχετε monitor για design;
+```
+
+### Product Comparison
+
+```text
+Σύγκρινε GamePro 15 με NitroPlay 15
+Σύγκρινε ProColor 32 με StudioColor 27
+```
+
+### Conversation Memory
+
+```text
+Τι μου πρότεινες τελικά;
+```
+
+### Store Policies & FAQs
+
+```text
+Πόσα χρόνια εγγύηση έχουν τα laptops;
+Σε πόσες δόσεις μπορώ να πληρώσω;
+Υπάρχει τεχνική υποστήριξη;
+Υποστηρίζετε Box Now;
+```
+
+### Out-of-scope Handling
+
+```text
+Ποιος κέρδισε το Champions League;
 ```
 
 ## Testing
@@ -146,6 +180,18 @@ docs/test_cases.md
 ### Prompt Engineering
 
 The assistant uses structured prompts to answer as a sales and support assistant for a technology store.
+
+### Hybrid Retrieval
+
+The retrieval layer combines Chroma vector similarity search with BM25 keyword-based retrieval. This improves results for both semantic user queries and exact product, payment or policy terms.
+
+### Product Comparison
+
+The assistant can compare products side-by-side using retrieved catalog data and present the comparison in a structured table.
+
+### Source Transparency
+
+The assistant returns retrieved source previews and can include source citations in generated answers.
 
 ### Retrieval-Augmented Generation
 

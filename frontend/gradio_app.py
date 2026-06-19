@@ -253,16 +253,32 @@ Ask questions about products, store policies, shipping, returns or request produ
             sources_output = gr.Markdown("No sources retrieved.")
 
             gr.Markdown(
-                """
+    """
 ### Example Questions
 
+**Product Recommendation**
+- Θέλω laptop για gaming μέχρι 900€
 - Θέλω laptop για gaming μέχρι 1900€
-- Ποια είναι η πολιτική επιστροφών;
-- Υποστηρίζετε Box Now;
 - Έχετε monitor για design;
-- Θέλω smart home προϊόντα μέχρι 100€
+
+**Product Comparison**
+- Σύγκρινε GamePro 15 με NitroPlay 15
+- Σύγκρινε ProColor 32 με StudioColor 27
+
+**Conversation Memory**
+- Τι μου πρότεινες τελικά;
+
+**Store Policies & FAQs**
+- Πόσα χρόνια εγγύηση έχουν τα laptops;
+- Σε πόσες δόσεις μπορώ να πληρώσω;
+- Υπάρχει τεχνική υποστήριξη;
+- Υποστηρίζετε Box Now;
+
+**Out-of-scope Handling**
+- Ποιος κέρδισε το Champions League;
 """
-            )
+)
+
 
     # Event wiring
     msg.submit(
