@@ -36,6 +36,8 @@ def route_node(state: GraphState) -> dict:
         "αγορά",
         "πρότεινε",
         "budget",
+        "σύγκρινε",
+        "συγκρινε",
     ]
 
     policy_keywords = [
