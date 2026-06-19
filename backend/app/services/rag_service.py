@@ -41,8 +41,7 @@ def route_question(question: str) -> str:
         "mouse", "keyboard", "headset", "printer", "gaming",
         "streaming", "smart home", "προϊόν", "προϊόντα",
         "αγορά", "πρότεινε", "προτείνεις", "προτεινες",
-        "σύγκρινε", "τιμή", "budget", "μέχρι", "κάτω από",
-        "δουλειά", "σπουδές", "rtx", "gpu", "cpu", "ram",
+        "σύγκρινε", "συγκρινε", "τιμή", "budget", "μέχρι", "κάτω από", "δουλειά", "σπουδές", "rtx", "gpu", "cpu", "ram",
         "ssd", "οθόνη", "καμερα", "μπαταρία", "setup",
     ]
 
@@ -136,8 +135,6 @@ Conversation context:
 Current question:
 {question}
 """
-    
-
 
     # Use LangGraph route when available
     if forced_route:
@@ -160,17 +157,28 @@ Current question:
         # We keep the context for FAQs/policies
         retrieval_query = retrieval_question
 
-
     # Select the appropriate retriever
     retriever = get_retriever(route)
 
     # Retrieve relevant chunks using both history and current question
     retrieved_docs = retriever.invoke(retrieval_query)
 
+    print("\n==================== DEBUG RAG ====================")
+    print("QUESTION:", question)
+    print("ROUTE:", route)
+    print("\nDOCS FOUND:", len(retrieved_docs))
+
+    for i, doc in enumerate(retrieved_docs, start=1):
+        print(f"\nDOC {i}")
+        print(doc.page_content[:1000])
+
+    print("==================== END DEBUG ====================\n")
+
+
     # Build RAG context from retrieved chunks
     context = "\n\n".join(
-        doc.page_content
-        for doc in retrieved_docs
+    f"[Source {index}]\n{doc.page_content}"
+    for index, doc in enumerate(retrieved_docs, start=1)
     )
 
     # Generate final answer
