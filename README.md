@@ -11,7 +11,6 @@ The application helps users ask questions about products, store policies, shippi
 - LangChain RAG pipeline
 - OpenAI LLM integration
 - Chroma vector store
-- BM25 keyword retrieval
 - Hybrid retrieval using Chroma and BM25
 - Product recommendation support
 - Product comparison support
@@ -23,11 +22,59 @@ The application helps users ask questions about products, store policies, shippi
 - Source citations in generated answers
 - Out-of-scope question handling
 
-## Architecture
+## AI Sales & Support Assistant Architecture
 
-The following diagram illustrates the overall system architecture.
+The architecture combines LangGraph routing, hybrid retrieval (BM25 + Chroma),
+conversation memory, prompt engineering and GPT-4o-mini to generate grounded
+responses with source citations.
+
 
 ![Architecture Diagram](docs/architecture_diagram.png)
+
+## Project Structure
+
+The codebase is organized using separation of concerns. Backend logic, frontend UI, documentation, knowledge bases and AI services are kept in separate folders.
+
+```text
+ai-sales-support-assistant/
+├── backend/
+│   └── app/
+│       ├── core/
+│       │   └── settings.py                 # Application settings and constants
+│       ├── data/
+│       │   ├── faqs.txt                    # FAQ knowledge base
+│       │   ├── policies.txt                # Store policies knowledge base
+│       │   └── products.txt                # Product catalog knowledge base
+│       ├── routers/
+│       │   └── chat.py                     # FastAPI /chat endpoint
+│       ├── schemas/
+│       │   └── chat_schema.py              # Pydantic request/response schemas
+│       ├── services/
+│       │   ├── graph_service.py            # LangGraph routing logic
+│       │   ├── memory_service.py           # Conversation memory and summarization
+│       │   ├── prompt_service.py           # RAG and summary prompts
+│       │   ├── rag_service.py              # Main RAG workflow
+│       │   └── vectorstore_service.py      # Hybrid retrieval with Chroma and BM25
+│       ├── vectorstore/                    # Local Chroma vector stores (ignored by Git)
+│       └── main.py                         # FastAPI application entry point
+│
+├── frontend/
+│   ├── config.py                           # Frontend API configuration
+│   └── gradio_app.py                       # Gradio chat interface
+│
+├── docs/
+│   ├── architecture_diagram.png            # Architecture diagram
+│   ├── memory_screenshot.png               # Conversation memory example
+│   ├── project_report.md                   # Detailed project report
+│   ├── swagger_screenshot.png              # FastAPI Swagger screenshot
+│   ├── test_cases.md                       # Manual test cases
+│   └── ui_screenshot.png                   # Gradio UI screenshot
+│
+├── .gitignore                              # Ignored files and folders
+├── LICENSE                                 # Project license
+├── README.md                               # Project documentation
+└── requirements.txt                        # Python dependencies
+```
 
 ## Screenshots
 
@@ -39,50 +86,9 @@ The following diagram illustrates the overall system architecture.
 
 ![Memory Screenshot](docs/memory_screenshot.png)
 
-## Project Structure
+### API Documentation
 
-```text
-backend/
-  app/
-    core/
-      settings.py
-    data/
-      faqs.txt
-      policies.txt
-      products.txt
-    routers/
-      chat.py
-    schemas/
-      chat_schema.py
-    services/
-      graph_service.py
-      memory_service.py
-      prompt_service.py
-      rag_service.py
-      vectorstore_service.py
-    vectorstore/
-      faqs_kb/
-      policies_kb/
-      products_kb/
-    main.py
-
-frontend/
-  config.py
-  gradio_app.py
-  
-docs/
-  architecture_diagram.png
-  memory_screenshot.png
-  project_report.md
-  swagger_screenshot.png
-  test_cases.md
-  ui_screenshot.png
-
-.gitignore
-LICENSE
-README.md
-requirements.txt
-```
+![Swagger Screenshot](docs/swagger_screenshot.png)
 
 ## Installation
 
