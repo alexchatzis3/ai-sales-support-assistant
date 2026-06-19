@@ -4,6 +4,11 @@ from langchain_chroma import Chroma
 from langchain_openai import OpenAIEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
+from langchain_community.retrievers import BM25Retriever 
+from langchain_classic.retrievers import EnsembleRetriever
+
+
+
 from backend.app.core.settings import (
     CHUNK_OVERLAP,
     CHUNK_SIZE,
@@ -61,9 +66,26 @@ def build_retriever(file_name: str, collection_name: str):
         persist_directory=str(VECTORSTORE_DIR / collection_name)
     )
 
-    retriever = vectorstore.as_retriever(
+    # Dense retriever: semantic search using Chroma vector similarity
+    dense_retriever = vectorstore.as_retriever(
         search_kwargs = {"k": TOP_K_RESULTS}
     )
+
+    # BM25 retriever: keyword-based search for exact terms
+    bm25_retriever = BM25Retriever.from_documents(kb_chunks)
+    bm25_retriever.k = TOP_K_RESULTS
+
+    # Hybrid retriever: combines semantic and keyword retrieval
+    retriever = EnsembleRetriever(
+        retrievers=[
+            bm25_retriever,
+            dense_retriever,
+        ],
+        weights=[
+            0.5,
+            0.5,
+        ],
+)
 
     print(
         f"{collection_name}: "
