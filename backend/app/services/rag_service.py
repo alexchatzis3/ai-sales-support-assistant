@@ -163,18 +163,6 @@ Current question:
     # Retrieve relevant chunks using both history and current question
     retrieved_docs = retriever.invoke(retrieval_query)
 
-    print("\n==================== DEBUG RAG ====================")
-    print("QUESTION:", question)
-    print("ROUTE:", route)
-    print("\nDOCS FOUND:", len(retrieved_docs))
-
-    for i, doc in enumerate(retrieved_docs, start=1):
-        print(f"\nDOC {i}")
-        print(doc.page_content[:1000])
-
-    print("==================== END DEBUG ====================\n")
-
-
     # Build RAG context from retrieved chunks
     context = "\n\n".join(
     f"[Source {index}]\n{doc.page_content}"
