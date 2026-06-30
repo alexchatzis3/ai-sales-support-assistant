@@ -17,8 +17,6 @@ import requests
 import gradio as gr
 from config import API_URL
 
-API_URL = API_URL
-
 
 def call_chat_api(message: str, history: list) -> dict:
     """
