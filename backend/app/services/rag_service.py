@@ -5,7 +5,7 @@ First, it builds conversation context from chat history using the memory service
 
 Next, it determines the appropriate knowledge base route, either from the LangGraph router or through fallback keyword-based routing.
 
-Based on the selected route, it retrieves th e corresponding retriever from the vector store service and performs a similarity search in Chroma to obtain the most relevant document chunks.
+Based on the selected route, it retrieves the corresponding retriever from the vector store service and performs hybrid retrieval using Chroma and BM25, to obtain the most relevant document chunks.
 
 The retrieved context, together with the user's question and conversation history, is then passed to the RAG prompt.
 
@@ -165,8 +165,8 @@ Current question:
 
     # Build RAG context from retrieved chunks
     context = "\n\n".join(
-    f"[Source {index}]\n{doc.page_content}"
-    for index, doc in enumerate(retrieved_docs, start=1)
+        f"[Source {index}]\n{doc.page_content}"
+        for index, doc in enumerate(retrieved_docs, start=1)
     )
 
     # Generate final answer
