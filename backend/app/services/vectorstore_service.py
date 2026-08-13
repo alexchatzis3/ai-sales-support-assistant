@@ -59,12 +59,23 @@ def build_retriever(file_name: str, collection_name: str):
 
     kb_chunks = splitter.split_documents(docs)
 
-    vectorstore = Chroma.from_documents(
-        kb_chunks,
-        embedding=embedder,
-        collection_name=collection_name,
-        persist_directory=str(VECTORSTORE_DIR / collection_name)
-    )
+    persist_path = VECTORSTORE_DIR / collection_name
+
+    if persist_path.exists() and any(persist_path.iterdir()):
+        # Load the existing persisted Chroma collection
+        vectorstore = Chroma(
+            collection_name=collection_name,
+            embedding_function=embedder,
+            persist_directory=str(persist_path),
+        )
+    else:
+        # Create and persist the Chroma collection for the first time
+        vectorstore = Chroma.from_documents(
+            kb_chunks,
+            embedding=embedder,
+            collection_name=collection_name,
+            persist_directory=str(persist_path),
+        )
 
     # Dense retriever: semantic search using Chroma vector similarity
     dense_retriever = vectorstore.as_retriever(
