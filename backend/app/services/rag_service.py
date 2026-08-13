@@ -19,6 +19,8 @@ from backend.app.services.memory_service import build_conversation_context
 from backend.app.services.prompt_service import RAG_PROMPT
 from backend.app.services.vectorstore_service import get_retriever
 
+from backend.app.services.query_rewrite_service import rewrite_query
+
 llm = ChatOpenAI(
     model = CHAT_MODEL,
     temperature=0
@@ -149,13 +151,14 @@ Current question:
             if previous_route:
                 route = previous_route
 
-    # Current question is only used for `products`
-    # Conversation context might harm the retrieval process
-    if route == "products":
-        retrieval_query = question
+    # Rewrite follow-up questions into standalone retrieval queries
+    if history:
+        retrieval_query = rewrite_query(
+            question=question,
+            conversation_context=conversation_context,
+        )
     else:
-        # We keep the context for FAQs/policies
-        retrieval_query = retrieval_question
+        retrieval_query = question
 
     # Select the appropriate retriever
     retriever = get_retriever(route)
