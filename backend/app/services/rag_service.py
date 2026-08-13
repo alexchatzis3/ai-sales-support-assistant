@@ -183,6 +183,7 @@ Current question:
     return {
         "answer": response.content,
         "route": route,
+        "context": context,
         "sources": [
             {
                 "source": doc.metadata.get("source", "unknown"),

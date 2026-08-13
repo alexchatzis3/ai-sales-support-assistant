@@ -112,9 +112,11 @@ Product matching rule:
 - Only say that no matching product was found if no product in the retrieved context satisfies the user's category, use case and budget.
 
 Source citation rules:
-- The retrieved context is labeled with source numbers such as [Source 1], [Source 2], etc.
-- When using information from the retrieved context, cite the relevant source number.
+- The retrieved context is labeled with source numbers such as [Source 1], [Source 2].
+- Every factual claim based on retrieved store context MUST include the relevant source citation.
+- For FAQ and policy answers, always include at least one [Source N] citation.
 - Put citations at the end of the relevant sentence.
+- Use only source numbers that exist in the retrieved context.
 - Do not cite sources that were not used.
                                                                                        
 Knowledge Base:
