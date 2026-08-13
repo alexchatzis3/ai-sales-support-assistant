@@ -97,4 +97,48 @@ TEST_CASES = [
         ],
         "expect_citation": False,
     },
+
+    {
+        "name": "Follow-up previous recommendation",
+        "question": "Τι μου πρότεινες τελικά;",
+        "history": [
+            {
+                "role": "user",
+                "content": "Θέλω laptop για gaming μέχρι 900€",
+            },
+            {
+                "role": "assistant",
+                "content": "Σας πρότεινα το GamePro 15 στα 899€.",
+            },
+        ],
+        "expected_route": "products",
+        "expected_terms": [
+            "GamePro 15",
+            "899€",
+        ],
+        "expect_citation": False,
+    },
+    {
+        "name": "Follow-up changed budget",
+        "question": "Και μέχρι 1200€;",
+        "history": [
+            {
+                "role": "user",
+                "content": "Θέλω laptop για gaming μέχρι 1900€",
+            },
+            {
+                "role": "assistant",
+                "content": (
+                    "Σας πρότεινα τα GamePro 15, NitroPlay 15 "
+                    "και Titan Gaming G17."
+                ),
+            },
+        ],
+        "expected_route": "products",
+        "expected_terms": [
+            "GamePro 15",
+            "NitroPlay 15",
+        ],
+        "expect_citation": False,
+    },
 ]

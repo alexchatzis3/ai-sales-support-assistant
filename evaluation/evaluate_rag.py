@@ -77,6 +77,7 @@ def evaluate_test_case(test_case: dict) -> dict:
     """
 
     question = test_case["question"]
+    history = test_case.get("history", [])
     expected_route = test_case["expected_route"]
     expected_terms = test_case.get("expected_terms", [])
     expect_citation = test_case.get("expect_citation", False)
@@ -84,10 +85,14 @@ def evaluate_test_case(test_case: dict) -> dict:
     # Use the same LangGraph routing used by the FastAPI endpoint
     selected_route = get_route(question)
 
+    # Generic follow-up questions may need the previous route from history
+    if selected_route == "faqs" and history:
+        selected_route = None
+
     # Execute the existing RAG pipeline
     result = ask_rag(
         question=question,
-        history=[],
+        history=history,
         forced_route=selected_route,
     )
 
