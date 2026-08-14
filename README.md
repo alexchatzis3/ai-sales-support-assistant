@@ -12,6 +12,7 @@ The application helps users ask questions about products, store policies, shippi
 - OpenAI LLM integration
 - Chroma vector store
 - Hybrid retrieval using Chroma and BM25
+- Conversation-aware query rewriting
 - Product recommendation support
 - Product comparison support
 - FAQ, policies and product catalog retrieval
@@ -21,12 +22,13 @@ The application helps users ask questions about products, store policies, shippi
 - Retrieved source previews
 - Source citations in generated answers
 - Out-of-scope question handling
+- Automated RAG evaluation
+- Multi-turn conversation evaluation
+- LLM-as-a-Judge evaluation
 
 ## AI Sales & Support Assistant Architecture
 
-The architecture combines LangGraph routing, hybrid retrieval (BM25 + Chroma),
-conversation memory, prompt engineering and GPT-4o-mini to generate grounded
-responses with source citations.
+The architecture combines LangGraph routing, conversation memory, query rewriting, hybrid retrieval (BM25 + Chroma), prompt engineering and GPT-4o-mini to generate grounded responses with source citations.
 
 
 ![Architecture Diagram](docs/architecture_diagram.png)
@@ -53,6 +55,7 @@ ai-sales-support-assistant/
 │       │   ├── graph_service.py            # LangGraph routing logic
 │       │   ├── memory_service.py           # Conversation memory and summarization
 │       │   ├── prompt_service.py           # RAG and summary prompts
+│       │   ├── query_rewrite_service.py    # Conversation-aware query rewriting
 │       │   ├── rag_service.py              # Main RAG workflow
 │       │   └── vectorstore_service.py      # Hybrid retrieval with Chroma and BM25
 │       ├── vectorstore/                    # Local Chroma vector stores (ignored by Git)
@@ -64,11 +67,17 @@ ai-sales-support-assistant/
 │
 ├── docs/
 │   ├── architecture_diagram.png            # Architecture diagram
+│   ├── evaluation_results_screenshot.png   # Automated RAG evaluation results
 │   ├── memory_screenshot.png               # Conversation memory example
 │   ├── project_report.md                   # Detailed project report
 │   ├── swagger_screenshot.png              # FastAPI Swagger screenshot
 │   ├── test_cases.md                       # Manual test cases
 │   └── ui_screenshot.png                   # Gradio UI screenshot
+│
+├── evaluation/
+│   ├── evaluate_rag.py                     # Automated RAG evaluation runner
+│   ├── judge_service.py                    # LLM-as-a-Judge evaluation
+│   └── test_cases.py                       # Single-turn and multi-turn test cases
 │
 ├── .gitignore                              # Ignored files and folders
 ├── LICENSE                                 # Project license
@@ -173,7 +182,46 @@ http://127.0.0.1:7860
 Ποιος κέρδισε το Champions League;
 ```
 
-## Testing
+## Evaluation
+
+The project includes an automated evaluation pipeline for testing the RAG system.
+
+Run the evaluation from the project root:
+
+```cmd
+python -m evaluation.evaluate_rag
+```
+**The evaluation includes:**
+- Knowledge-base routing accuracy
+- Expected answer content checks
+- Source retrieval checks
+- Source citation validation
+- Single-turn test cases
+- Multi-turn conversation test cases
+- LLM-as-a-Judge evaluation
+
+**The LLM-as-a-Judge evaluates generated answers using three criteria:**
+- Relevance
+- Groundedness
+- Completeness
+
+**Current evaluation results:**
+
+```text
+Tests passed:       11/11
+Route accuracy:     100.0%
+Content accuracy:   100.0%
+Source retrieval:   100.0%
+Citation accuracy:  100.0%
+
+LLM-as-a-Judge:
+Average relevance:    5.00/5
+Average groundedness: 5.00/5
+Average completeness: 5.00/5
+```
+
+![RAG Evaluation Results](docs/evaluation_results_screenshot.png)
+
 
 Manual test cases are available in:
 
@@ -191,6 +239,8 @@ The assistant uses structured prompts to answer as a sales and support assistant
 
 The retrieval layer combines Chroma vector similarity search with BM25 keyword-based retrieval. This improves results for both semantic user queries and exact product, payment or policy terms.
 
+Chroma is persisted locally and existing collections are loaded on application startup instead of being re-indexed, preventing duplicate document chunks from being added across multiple runs.
+
 ### Product Comparison
 
 The assistant can compare products side-by-side using retrieved catalog data and present the comparison in a structured table.
@@ -207,6 +257,28 @@ The application loads business knowledge from text files, splits it into chunks,
 
 The system keeps recent chat messages and summarizes older messages, allowing follow-up questions.
 
+### Query Rewriting
+
+The system uses conversation-aware query rewriting to improve retrieval for follow-up questions.
+
+When a user asks an ambiguous follow-up question, the current question and conversation context are used to generate a standalone retrieval query. This allows the hybrid retriever to search with the complete intent while preserving the original conversation.
+
+For example:
+
+```text
+Previous question:
+Θέλω laptop για gaming μέχρι 900€
+
+Follow-up:
+Τι μου πρότεινες τελικά;
+
+Rewritten retrieval query:
+A standalone query containing the relevant context from the previous conversation.
+```
+
+The rewritten query is used only for document retrieval, while the original question and conversation context are preserved for final answer generation.
+
+
 ### LangGraph Routing
 
 LangGraph is used to route user questions to the correct knowledge base:
@@ -218,7 +290,7 @@ LangGraph is used to route user questions to the correct knowledge base:
 
 The application was developed as an educational project for the AI for Developers program.
 
-The project demonstrates the integration of FastAPI, LangChain, LangGraph, Chroma, OpenAI models, Retrieval-Augmented Generation (RAG) and conversation memory in a complete end-to-end AI application.
+The project demonstrates the integration of FastAPI, LangChain, LangGraph, Chroma, OpenAI models, hybrid retrieval, query rewriting, conversation memory and automated RAG evaluation in a complete end-to-end AI application.
 
 ## License
 
