@@ -101,9 +101,10 @@ The following diagram illustrates the overall architecture of the AI Sales & Sup
     - FAQs
 4. The RAG Service orchestrates retrieval and answer generation.
 5. Memory Service provides conversation context and summaries.
-6. Vectorstore Service performs hybrid retrieval using Chroma vector search and BM25 keyword retrieval.
-7. OpenAI GPT-4o-mini generates the final response.
-8. The answer is returned to the user interface.
+6. Query Rewrite Service uses the current question and conversation context to create a standalone retrieval query for ambiguous follow-up questions.
+7. Vectorstore Service performs hybrid retrieval using Chroma vector search and BM25 keyword retrieval.
+8. OpenAI GPT-4o-mini generates the final response using the retrieved context and conversation context.
+9. The answer, selected route and retrieved sources are returned to the user interface.
 
 ---
 
@@ -119,6 +120,12 @@ Classifies user questions and selects the most relevant knowledge base.
 
 ### Memory Service
 Maintains conversation history and summarizes older messages.
+
+### Query Rewrite Service
+
+Rewrites ambiguous follow-up questions into standalone retrieval queries using conversation context.
+
+This improves document retrieval for multi-turn conversations while preserving the user's original question for final answer generation.
 
 ### Vectorstore Service
 Loads documents, creates embeddings and retrieves relevant information from Chroma.
@@ -139,11 +146,13 @@ The Retrieval-Augmented Generation pipeline performs the following steps:
 2. Split documents into chunks
 3. Generate embeddings
 4. Store vectors in Chroma
-5. Perform hybrid retrieval:
+5. Build conversation context from chat history
+6. Rewrite ambiguous follow-up questions into standalone retrieval queries when needed
+7. Perform hybrid retrieval:
    - Chroma vector similarity search
    - BM25 keyword retrieval
-6. Combine retrieval results using an Ensemble Retriever
-7. Generate grounded responses using GPT-4o-mini
+8. Combine retrieval results using an Ensemble Retriever
+9. Generate grounded responses using GPT-4o-mini
 
 ---
 
@@ -205,6 +214,26 @@ Chroma performs similarity search to find relevant information.
 ### Conversation Memory
 
 Recent messages are preserved while older messages are summarized.
+
+### Query Rewriting
+
+The system uses conversation-aware query rewriting to improve retrieval for follow-up questions.
+
+When a question depends on previous conversation context, the assistant can transform it into a standalone retrieval query.
+
+**For example:**
+
+Previous conversation:
+
+```"Θέλω laptop για gaming μέχρι 900€"```
+
+Follow-up question:
+
+```"Τι μου πρότεινες τελικά;"```
+
+The system uses the conversation context to create a more informative retrieval query before searching the knowledge base.
+
+The rewritten query is used for retrieval, while the original question and conversation context are preserved for final answer generation.
 
 ### LangGraph Routing
 
@@ -285,7 +314,65 @@ The API exposes a `/chat` endpoint that returns the generated answer, selected r
 
 ---
 
-## 13. Future Improvements
+## 13. RAG Evaluation
+
+The project includes an automated evaluation pipeline used to validate the behavior and quality of the RAG system.
+
+The evaluation combines deterministic checks with LLM-as-a-Judge evaluation.
+
+### Deterministic Evaluation
+
+The automated tests evaluate:
+
+- Knowledge-base routing accuracy
+- Expected answer content
+- Source retrieval
+- Source citation validation
+- Single-turn interactions
+- Multi-turn conversation behavior
+
+The evaluation can be executed from the project root using:
+
+```cmd
+python -m evaluation.evaluate_rag
+```
+
+### LLM-as-a-Judge
+
+In addition to deterministic tests, GPT-4o-mini is used as an LLM-as-a-Judge to evaluate generated responses.
+
+Each response is evaluated using three criteria:
+
+- Relevance
+- Groundedness
+- Completeness
+
+Each criterion is scored from 1 to 5.
+
+### Evaluation Results
+
+The final evaluation produced the following results:
+
+```text
+Tests passed:       11/11
+Route accuracy:     100.0%
+Content accuracy:   100.0%
+Source retrieval:   100.0%
+Citation accuracy:  100.0%
+
+LLM-as-a-Judge:
+Average relevance:    5.00/5
+Average groundedness: 5.00/5
+Average completeness: 5.00/5
+```
+
+The results show that all predefined test cases passed successfully and that the generated answers achieved the maximum average score across the LLM-as-a-Judge criteria.
+
+![RAG Evaluation Results](evaluation_results_screenshot.png)
+
+--- 
+
+## 14. Future Improvements
 
 Potential future enhancements include:
 
@@ -299,8 +386,10 @@ Potential future enhancements include:
 
 ---
 
-## 14. Conclusion
+## 15. Conclusion
 
 The AI Sales & Support Assistant demonstrates how modern Generative AI technologies can be combined to create a practical customer support solution.
 
-The project integrates RAG, conversation memory, vector databases, workflow orchestration and LLMs into a complete end-to-end application.
+The project integrates Retrieval-Augmented Generation, hybrid retrieval, conversation memory, query rewriting, vector databases, LangGraph workflow orchestration and OpenAI language models into a complete end-to-end AI application.
+
+The addition of automated RAG evaluation and LLM-as-a-Judge provides a structured way to validate routing, retrieval, answer content, source citations and overall response quality.
