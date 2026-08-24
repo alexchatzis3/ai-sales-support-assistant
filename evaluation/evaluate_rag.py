@@ -7,6 +7,11 @@ This module executes predefined RAG test cases and evaluates:
 - retrieved sources
 - source citations
 
+It also integrates LLM-as-a-Judge evaluation for:
+- relevance
+- groundedness
+- completeness
+
 Run from the project root with:
 
     python -m evaluation.evaluate_rag
@@ -24,6 +29,8 @@ def contains_expected_terms(answer: str, expected_terms: list[str]) -> tuple[boo
     """
     Check whether all expected terms are present in the generated answer.
 
+    The comparison is case-insensitive so that differences in capitalization do not cause an otherwise correct answer to fail.
+
     Args:
         answer: Generated assistant answer.
         expected_terms: Terms expected to appear in the answer.
@@ -36,12 +43,14 @@ def contains_expected_terms(answer: str, expected_terms: list[str]) -> tuple[boo
 
     answer_lower = answer.lower()
 
+    # Collect only the expected terms that do not appear in the answer.
     missing_terms = [
         term 
         for term in expected_terms
         if term.lower() not in answer_lower
     ]
 
+    # The content check passes only when no required terms are missing.
     return len(missing_terms) == 0, missing_terms
 
 def contains_source_citation(answer: str) -> bool:
@@ -61,23 +70,41 @@ def contains_source_citation(answer: str) -> bool:
     """
 
     return bool(
-        re.search(r"\[Source\s+\d+\]", answer, re.IGNORECASE)
+        re.search(
+            r"\[Source\s+\d+\]", 
+            answer, 
+            re.IGNORECASE,
+            )
     )
 
 
 def evaluate_test_case(test_case: dict) -> dict:
     """
-    Execute and evaluate a single RAG test case.
+    Execute and evaluate one predefined RAG test case.
+
+    This function runs the same routing and RAG workflow used by
+    the real FastAPI chat endpoint.
+
+    The generated result is evaluated using:
+    - route correctness
+    - expected answer content
+    - source retrieval
+    - citation presence
+    - LLM-as-a-Judge scoring
 
     Args:
-        test_case: Test case configuration.
+        test_case: Test case configuration from TEST_CASES.
 
     Returns:
-        Dictionary containing evaluation results.
+        Dictionary containing the complete evaluation result.
     """
 
     question = test_case["question"]
+
+    # Single-turn tests do not define history, so they default to [].
+    # Multi-turn tests provide previous user/assistant messages here.
     history = test_case.get("history", [])
+    
     expected_route = test_case["expected_route"]
     expected_terms = test_case.get("expected_terms", [])
     expect_citation = test_case.get("expect_citation", False)
@@ -85,7 +112,8 @@ def evaluate_test_case(test_case: dict) -> dict:
     # Use the same LangGraph routing used by the FastAPI endpoint
     selected_route = get_route(question)
 
-    # Generic follow-up questions may need the previous route from history
+    # Generic follow-up questions may be classified as the default "faqs" route.
+    # Setting the route to None allows rag_service.py to inspect the conversation history and recover the previous meaningful route.
     if selected_route == "faqs" and history:
         selected_route = None
 
@@ -96,37 +124,45 @@ def evaluate_test_case(test_case: dict) -> dict:
         forced_route=selected_route,
     )
 
+    # Extract the values returned by rag_service.py.
     answer = result["answer"]
     actual_route = result["route"]
     sources = result["sources"]
 
     context = result["context"]
 
+    # LLM-as-a-Judge evaluation
     judge_result = evaluate_with_llm(
         question=question,
         context=context,
         answer=answer
     )
 
-    # Deterministic checks
+    # Deterministic evaluation checks
+    # Check whether the actual route matches the expected route.
     route_passed = actual_route == expected_route
 
+    # Check whether all required answer terms are present.
     content_passed, missing_terms = contains_expected_terms(
         answer,
         expected_terms,
     )
 
+    # The retrieval check passes when at least one document was retrieved.
     sources_passed = len(sources) > 0
 
+    # Detect whether the generated answer contains a [Source N] citation.
     citation_found = contains_source_citation(answer)
 
-    # A citation is required only when the test case expects one
+    # A citation is required only when the test case expects one.
     citation_passed = (
         citation_found
         if expect_citation
         else True
     )
 
+    # The deterministic test succeeds only when all required checks pass.
+    # LLM-as-a-Judge scores are intentionally NOT included here because they are a separate qualitative evaluation layer.
     overall_passed = all(
         [
             route_passed,
@@ -136,6 +172,7 @@ def evaluate_test_case(test_case: dict) -> dict:
         ]
     )
 
+    # Return all information required for individual reporting and aggregate summary calculations.
     return {
         "name": test_case["name"],
         "question": question,
@@ -157,12 +194,13 @@ def evaluate_test_case(test_case: dict) -> dict:
 
 def print_test_result(result: dict) -> None:
     """
-    Print the result of a single evaluation test.
+    Print the complete result of one evaluation test.
 
     Args:
-        result: Evaluation result dictionary.
+        result: Evaluation result dictionary returned by evaluate_test_case().
     """
 
+    # Convert the overall boolean result into a readable label.
     status = "PASS" if result["overall_passed"] else "FAIL"
 
     print("\n" + "=" * 70)
@@ -220,10 +258,10 @@ def print_test_result(result: dict) -> None:
 
 def print_summary(results: list[dict]) -> None:
     """
-    Print aggregate deterministic evaluation metrics.
+    Print aggregate deterministic evaluation metrics for all executed test cases.
 
     Args:
-        results: Results from all executed test cases.
+        results: Results returned by all evaluation test cases.
     """
 
     total = len(results)
@@ -248,6 +286,7 @@ def print_summary(results: list[dict]) -> None:
         for result in results
     )
 
+    # Citation accuracy should only include test cases where citations were explicitly required.
     citation_tests = [
         result
         for result in results
@@ -297,6 +336,7 @@ def print_summary(results: list[dict]) -> None:
     print(f"Average groundedness: {avg_groundedness:.2f}/5")
     print(f"Average completeness: {avg_completeness:.2f}/5")
 
+    # Avoid division by zero if no test cases require citations.
     if citation_tests:
         print(
             f"Citation accuracy:  "
@@ -315,12 +355,15 @@ def main() -> None:
 
     results = []
 
+    # Execute every predefined single-turn and multi-turn test case
     for test_case in TEST_CASES:
         result = evaluate_test_case(test_case)
         results.append(result)
 
+        # Print detailed results immediately after each test.
         print_test_result(result)
 
+    # After all tests have run, print aggregate deterministic and LLM-as-a-Judge metrics.
     print_summary(results)
 
 
