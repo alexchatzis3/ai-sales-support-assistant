@@ -92,7 +92,7 @@ TEST_CASES = [
         "name": "Out of scope question",
         "question": "Ποιος κέρδισε το Champions League;",
         "expected_route": "faqs",
-        "expected_any_terms": [
+        "expected_terms": [
         "προϊόντα",
         ],
         "expect_citation": False,
