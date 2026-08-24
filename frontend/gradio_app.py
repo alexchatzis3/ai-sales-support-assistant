@@ -4,11 +4,17 @@ AI Sales & Support Assistant — Gradio UI
 
 Gradio web interface for the AI Sales & Support Assistant.
 
-The UI sends user messages and conversation history to the FastAPI backend
-and displays:
-- the assistant answer
-- the selected RAG route
-- the retrieved source previews
+The UI is responsible for:
+- collecting user messages
+- keeping visible chat history
+- keeping backend-compatible conversation history
+- sending requests to the FastAPI /chat endpoint
+- displaying the generated answer
+- displaying the selected knowledge-base route
+- displaying retrieved source previews
+
+The frontend does not execute the RAG pipeline itself.
+All routing, memory, query rewriting, retrieval and answer generation are handled by the FastAPI backend.
 """
 
 from __future__ import annotations
@@ -20,20 +26,28 @@ from config import API_URL
 
 def call_chat_api(message: str, history: list) -> dict:
     """
-    Send a user message and conversation history to the FastAPI chat endpoint.
+    Send the current user message and conversation history to FastAPI.
 
     Args:
         message: The user's current message.
         history: Previous conversation history in OpenAI-style format.
 
     Returns:
-        API response as a dictionary.
+        Parsed JSON response returned by the backend.
 
     Raises:
-        requests.RequestException: If the backend request fails.
+        requests.RequestException: 
+            If the HTTP request fails or the backend returns
+            a non-success status code.
     """
 
-    # Send both the current user message and previous conversation history
+    # Send both the current user message and previous conversation history.
+    # The request body matches the backend ChatRequest schema:
+    #
+    # {
+    #     "message": str,
+    #     "history": list[ChatMessage]
+    # }
     response = requests.post(
         API_URL,
         json={
@@ -43,18 +57,20 @@ def call_chat_api(message: str, history: list) -> dict:
         timeout=60,
     )
 
-    # Raise an exception for non-success status codes
+    # Raise an exception for non-success status codes.
     response.raise_for_status()
 
+    # FastAPI returns JSON containing:
+    # answer, route and retrieved sources.
     return response.json()
 
 
 def format_sources(sources: list[dict]) -> str:
     """
-    Format retrieved sources for display in the UI.
+    Convert retrieved source information into Markdown for the UI.
 
     Args:
-        sources: List of retrieved source dictionaries.
+        sources: List of retrieved source dictionaries returned by FastAPI.
 
     Returns:
         Markdown-formatted source information.
@@ -65,6 +81,7 @@ def format_sources(sources: list[dict]) -> str:
 
     markdown = "### Retrieved Sources\n\n"
 
+    # Number the sources starting from 1 so that the UI presentation matches the [Source N] convention used by the RAG pipeline.
     for index, source in enumerate(sources, start=1):
         source_name = source.get("source", "unknown")
         preview = source.get("preview", "")
@@ -81,18 +98,27 @@ def respond(
     api_history: list,
 ):
     """
-    Handle a user message from the Gradio UI.
+    Handle one complete user interaction from the Gradio UI.
+
+    The function:
+    1. validates the user message
+    2. sends the message and API history to FastAPI
+    3. reads the answer, route and sources
+    4. updates the visible chat
+    5. updates the backend-compatible conversation history
+    6. updates the route and source panels
 
     Args:
-        message: The message typed by the user.
-        chatbot_history: Visible Gradio chatbot history.
-        api_history: Backend-compatible conversation history.
+        message: Current message entered by the user.
+        chatbot_history: History displayed by the Gradio Chatbot.
+        api_history: Conversation history sent to the FastAPI backend.
 
     Returns:
-        Updated textbox, chatbot history, API history, route and sources.
+        Updated textbox value, visible chat history, API history, selected route display and retrieved source display.
     """
 
-    # Ignore empty messages
+    # Ignore empty or whitespace-only messages.
+    # This avoids unnecessary calls to the backend.
     if not message or not message.strip():
         return (
             "",
@@ -103,17 +129,20 @@ def respond(
         )
 
     try:
-        # Send backend-compatible history to FastAPI
+        # Send only the previous conversation history together with the new current message. 
+        # The current message is added to api_history after the backend response is received.
         result = call_chat_api(
             message=message,
             history=api_history,
         )
 
+        # Extract the fields defined by the backend ChatResponse schema.
         answer = result.get("answer", "No answer returned.")
         route = result.get("route", "unknown")
         sources = result.get("sources", [])
 
-        # Update visible chat history
+        # Update the visible Gradio conversation.
+        # These messages are displayed directly inside gr.Chatbot.
         chatbot_history.append(
             {
                 "role": "user",
@@ -127,7 +156,9 @@ def respond(
             }
         )
 
-        # Update backend-compatible memory history
+        # Keep a separate backend-compatible conversation history.
+        #
+        # This state is sent with the next request so that the backend can use conversation memory, previous routing intent and query rewriting for follow-up questions.
         api_history.append(
             {
                 "role": "user",
@@ -141,30 +172,34 @@ def respond(
             }
         )
 
+        # Prepare metadata panels shown next to the conversation.
         route_markdown = f"### Selected Route\n\n`{route}`"
         sources_markdown = format_sources(sources)
 
+        # Gradio maps these return values to the outputs configured in msg.submit() and send_btn.click().
         return (
-            "",
-            chatbot_history,
-            api_history,
-            route_markdown,
-            sources_markdown,
+            "",                 # Clear the message textbox
+            chatbot_history,    # Updated visible conversation
+            api_history,        # Updated backend memory state
+            route_markdown,     # Selected knowledge-base route
+            sources_markdown,   # Retrieved document previews
         )
 
     except requests.RequestException as exc:
-        # Show backend/API errors in the chat
+        # Handle connection errors, timeouts and backend HTTP errors without crashing the Gradio application.
         error_message = (
             "Δεν μπόρεσα να συνδεθώ με το backend. "
-            "Βεβαιώσου ότι το FastAPI τρέχει στο http://127.0.0.1:8000."
+            "Βεβαιώσου ότι το FastAPI backend είναι διαθέσιμο."
         )
 
+        # Display the failed interaction in the visible chat.
         chatbot_history.append(
             {
                 "role": "user",
                 "content": message,
             }
         )
+
         chatbot_history.append(
             {
                 "role": "assistant",
@@ -172,12 +207,14 @@ def respond(
             }
         )
 
+        # Store the interaction in API history as well so both frontend state representations remain synchronized.
         api_history.append(
             {
                 "role": "user",
                 "content": message,
             }
         )
+
         api_history.append(
             {
                 "role": "assistant",
@@ -196,12 +233,14 @@ def respond(
 
 def clear_chat():
     """
-    Clear the visible chat, API history and metadata panels.
+    Reset the complete frontend conversation state.
 
     Returns:
-        Empty visible chat, empty API history and default metadata text.
+        Empty visible chat history, empty backend conversation history, default route text and default source text.
     """
 
+    # Clearing both histories is important:
+    # otherwise the chat could appear empty while the backend would still receive previous conversation context.
     return (
         [],
         [],
@@ -211,7 +250,8 @@ def clear_chat():
 
 
 with gr.Blocks(title="AI Sales & Support Assistant") as app:
-    # Backend-compatible memory state
+
+    # Hidden state used only for backend conversation memory.
     api_history = gr.State([])
 
     gr.Markdown(
@@ -220,11 +260,14 @@ with gr.Blocks(title="AI Sales & Support Assistant") as app:
 
 Ask questions about products, store policies, shipping, returns or request product recommendations.
 
-**Architecture:** Gradio UI → FastAPI Backend → LangChain RAG → OpenAI
+**Architecture:** Gradio UI → FastAPI → LangGraph Routing → Hybrid RAG (BM25 + Chroma) → OpenAI
 """
     )
 
+    # Main two-column application layout.
     with gr.Row():
+
+        # Left column: conversation and user controls.
         with gr.Column(scale=3):
             chatbot = gr.Chatbot(
                 label="Conversation",
@@ -246,6 +289,7 @@ Ask questions about products, store policies, shipping, returns or request produ
 
             clear_btn = gr.Button("Clear Chat")
 
+        # Right column: routing information, retrieved sources and example user questions.
         with gr.Column(scale=2):
             route_output = gr.Markdown("Route: -")
             sources_output = gr.Markdown("No sources retrieved.")
@@ -279,6 +323,7 @@ Ask questions about products, store policies, shipping, returns or request produ
 
 
     # Event wiring
+    # Pressing Enter inside the textbox executes respond().
     msg.submit(
         respond,
         inputs=[msg, chatbot, api_history],
@@ -291,6 +336,7 @@ Ask questions about products, store policies, shipping, returns or request produ
         ],
     )
 
+    # Clicking Send executes the exact same workflow.
     send_btn.click(
         respond,
         inputs=[msg, chatbot, api_history],
@@ -303,6 +349,7 @@ Ask questions about products, store policies, shipping, returns or request produ
         ],
     )
 
+    # Reset both visible and hidden conversation state.
     clear_btn.click(
         clear_chat,
         inputs=[],
@@ -316,6 +363,7 @@ Ask questions about products, store policies, shipping, returns or request produ
 
 
 if __name__ == "__main__":
+    # Start the Gradio interface locally.
     app.launch(
         server_name="127.0.0.1",
         server_port=7860,
