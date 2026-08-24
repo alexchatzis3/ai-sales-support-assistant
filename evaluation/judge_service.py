@@ -5,7 +5,7 @@ The judge evaluates generated RAG answers using the original question and the re
 
 Metrics:
 - relevance
-- groundness
+- groundedness
 - completeness
 """
 
@@ -18,7 +18,7 @@ from backend.app.core.settings import CHAT_MODEL
 
 judge_llm = ChatOpenAI(
     model = CHAT_MODEL,
-    temperature=0
+    temperature=0,
 )
 
 JUDGE_PROMPT = ChatPromptTemplate.from_template("""
@@ -28,7 +28,7 @@ Evaluate the generated answer using ONLY:
 1. The user's question
 2. The retrieved context
 
-Do not user your own external knowledge.
+Do not use your own external knowledge.
 
 Important evaluation rules:
 
@@ -51,11 +51,10 @@ Does the answer directly address the user's question?
 
 2. Groundedness
 Are all factual claims supported by the retrieved context?
-Penalize invented facts, unsupported conclusions, performance claims,
-comparisons or specifications.
+Penalize invented facts, unsupported conclusions, performance claims, comparisons or specifications.
 
 3. Completeness
-Does the answer include the important information needed to answer the question based on the retrived context?
+Does the answer include the important information needed to answer the question based on the retrieved context?
 
 Score each criterion from 1 to 5:
 
